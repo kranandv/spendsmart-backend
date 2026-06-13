@@ -21,7 +21,7 @@ app.add_middleware(
 )
 Base.metadata.create_all(bind=engine)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 app.include_router(auth.router)
