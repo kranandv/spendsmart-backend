@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # PostgreSQL Connection
-DATABASE_URL = os.getenv("postgresql://myadmin:bVY3Qklau21SLPA8YMHEcCdCsH0Rbp5w@dpg-d8mn3d0js32c73ct19ig-a.oregon-postgres.render.com/spendsmart_7a1l")  # Render gives this directly
+DATABASE_URL = os.getenv("DATABASE_URL")  # Render gives this directly
 
 engine = create_engine(
     DATABASE_URL,
