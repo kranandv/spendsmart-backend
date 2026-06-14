@@ -111,7 +111,7 @@ async def login_for_access_token(
     if not user or not bcrypt_context.verify(form_data.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
-    token = create_access_token(user.username, user.id, timedelta(seconds=30))
+    token = create_access_token(user.username, user.id, timedelta(seconds=3000))
 
     response.set_cookie(
         key="access_token",
