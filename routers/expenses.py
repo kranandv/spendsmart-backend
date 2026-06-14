@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from models import Expense, User
 from database import SessionLocal
 from .auth import get_current_user
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory="templates2")
@@ -300,3 +300,13 @@ async def delete_expense(db:db_dependency, user: user_dependency, expense_id: in
         raise HTTPException(status_code=404, detail="Expense not found")
     db.delete(expense)
     db.commit()
+
+@router.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        path="/",
+        samesite="none",
+        secure=True
+    )
+    return {"message": "Logged out successfully"}
