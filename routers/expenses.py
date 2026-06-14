@@ -132,8 +132,19 @@ async def expenses_chart_data(
         if end_date:
             exp_summary=exp_summary.filter(Expense.date <= end_date)
         exp_summary=exp_summary.group_by(Expense.category).order_by(func.sum(Expense.amount).desc()).all()
+
+        type_summary = db.query(Expense.etype, func.sum(Expense.amount).label("total")
+                               ).filter(Expense.user_id == user.get("user_id"))
+        if category and category != "":
+            type_summary = type_summary.filter(Expense.category == category)
+        if start_date:
+            type_summary = type_summary.filter(Expense.date >= start_date)
+        if end_date:
+            type_summary = type_summary.filter(Expense.date <= end_date)
+        type_summary = type_summary.group_by(Expense.etype).order_by(func.sum(Expense.amount).desc()).all()
         summary = [{"category": cat, "total": float(total)} for cat, total in exp_summary]
-        return {"chart_data": summary}
+        typeSummary = [{"etype": etype, "total": float(total)} for etype, total in type_summary]
+        return {"chart_data": summary, "typeSummary":typeSummary}
     except:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Server Error")
 logger = logging.getLogger(__name__)
