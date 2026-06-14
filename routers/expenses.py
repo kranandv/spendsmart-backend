@@ -48,12 +48,12 @@ def redirect_to_login():
 
 
 @router.get("/",status_code=status.HTTP_200_OK)
-async def render_expenses_page(request: Request,db: db_dependency):
+async def render_expenses_page(request: Request,db: db_dependency,user:user_dependency):
     try:
-        cookie = request.cookies.get("access_token")
-        if not cookie:
-            raise HTTPException(status_code=401, detail="Authentication Failed")
-        user = await get_current_user(cookie)
+        # cookie = request.cookies.get("access_token")
+        # if not cookie:
+        #     raise HTTPException(status_code=401, detail="Authentication Failed")
+        # user = await get_current_user(cookie)
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
         user1=db.query(User).filter(User.id == user.get("user_id")).first()
@@ -63,8 +63,8 @@ async def render_expenses_page(request: Request,db: db_dependency):
 
 @router.get("/expenses",status_code=status.HTTP_200_OK)
 async def expenses_data(
-    request: Request,
     db: db_dependency,
+    user:user_dependency,
     category: Optional[str] = Query(None, description="Filter by category (or 'all')"),
     start_date: Optional[date] = Query(None, description="Start date (YYYY-MM-DD)"),
     end_date: Optional[date] = Query(None, description="End date (YYYY-MM-DD)"),
@@ -72,10 +72,10 @@ async def expenses_data(
     per_page: int = Query(5, ge=1, le=100)  # max 100 items per page
 ):
     try:
-        cookie = request.cookies.get("access_token")
-        if not cookie:
-            raise HTTPException(status_code=401, detail="Authentication Failed")
-        user = await get_current_user(cookie)
+        # cookie = request.cookies.get("access_token")
+        # if not cookie:
+        #     raise HTTPException(status_code=401, detail="Authentication Failed")
+        # user = await get_current_user(cookie)
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
         user_id = user.get("user_id")
@@ -109,17 +109,17 @@ async def expenses_data(
 
 @router.get("/chart-data", status_code=status.HTTP_200_OK)
 async def expenses_chart_data(
-        request: Request,
         db: db_dependency,
+        user:user_dependency,
         category: Optional[str] = Query(None, description="Filter by category (or 'all')"),
         start_date: Optional[date] = Query(None, description="Start date (YYYY-MM-DD)"),
         end_date: Optional[date] = Query(None, description="End date (YYYY-MM-DD)")
     ):
     try:
-        cookie = request.cookies.get("access_token")
-        if not cookie:
-            raise HTTPException(status_code=401, detail="Authentication Failed")
-        user= await get_current_user(cookie)
+        # cookie = request.cookies.get("access_token")
+        # if not cookie:
+        #     raise HTTPException(status_code=401, detail="Authentication Failed")
+        # user= await get_current_user(cookie)
 
         if user is None:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
@@ -138,12 +138,12 @@ async def expenses_chart_data(
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Server Error")
 logger = logging.getLogger(__name__)
 @router.get("/summary", status_code=status.HTTP_200_OK)
-async def expenses_summary(request: Request,db: db_dependency):
+async def expenses_summary(db: db_dependency,user: user_dependency):
     try:
-        cookie = request.cookies.get("access_token")
-        if not cookie:
-            raise HTTPException(status_code=401, detail="Authentication Failed")
-        user= await get_current_user(cookie)
+        # cookie = request.cookies.get("access_token")
+        # if not cookie:
+        #     raise HTTPException(status_code=401, detail="Authentication Failed")
+        # user= await get_current_user(cookie)
         if user is None:
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
         user_id = user.get("user_id")
@@ -245,12 +245,12 @@ async def create_expense(expense: CreateExpenseRequest, db:db_dependency, user: 
     db.commit()
 
 @router.get("/{expense_id}", status_code=status.HTTP_200_OK)
-async def render_edit_expense(request:Request, expense_id:int, db:db_dependency):
+async def render_edit_expense( expense_id:int, db:db_dependency,user: user_dependency):
     try:
-        cookie = request.cookies.get("access_token")
-        if cookie is None:
-            raise HTTPException(status_code=401, detail="Authentication Failed")
-        user= await get_current_user(cookie)
+        # cookie = request.cookies.get("access_token")
+        # if cookie is None:
+        #     raise HTTPException(status_code=401, detail="Authentication Failed")
+        # user= await get_current_user(cookie)
 
         if user is None:
             raise HTTPException(status_code=401, detail="Authentication Failed")
