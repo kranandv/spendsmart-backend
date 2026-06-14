@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from starlette import status
 from starlette.requests import Request
+from starlette.responses import Response
 from starlette.templating import Jinja2Templates
 from models import User
 from database import SessionLocal
@@ -101,12 +102,27 @@ def create_access_token(username: str, user_id:int, expires_delta: timedelta):
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db:db_dependency):
+async def login_for_access_token(
+        response: Response,
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        db: db_dependency
+):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not bcrypt_context.verify(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Could not validate credentials")
-    token=create_access_token(user.username,user.id,timedelta(seconds=30))
-    return {"access_token":token,"token_type":"bearer"}
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
+
+    token = create_access_token(user.username, user.id, timedelta(seconds=30))
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=2592000,
+        path="/"
+    )
+    return {"access_token": token, "token_type": "bearer"}
 
 async def get_current_user(token:Annotated[Token, Depends(oauth2_bearer)]):
     try:
