@@ -14,7 +14,7 @@
 | Service | URL |
 |---|---|
 | Frontend App | https://spendsmart-frontend-5q27.onrender.com/login.html |
-| Backend API Docs | https://spendsmart-backend.onrender.com/docs |
+
 
 > **Note:** Hosted on Render free tier. Server may take 30–60 seconds to wake up on first visit.
 
