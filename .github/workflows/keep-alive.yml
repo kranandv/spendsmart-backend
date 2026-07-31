@@ -2,9 +2,8 @@ name: Keep Render Backend Awake
 
 on:
   schedule:
-    # Runs every 12 minutes
     - cron: '*/12 * * * *'
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   ping:
